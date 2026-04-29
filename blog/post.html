@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Blog — Pairlot</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%230D2545'/%3E%3Ctext x='16' y='23' font-family='Arial Black, Arial, sans-serif' font-weight='900' font-size='14' fill='%234A9AFF' text-anchor='middle'%3EPL%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<style>
+  :root {
+    --navy:       #0D2545;
+    --navy-deep:  #091A30;
+    --navy-mid:   #142E55;
+    --navy-light: #1E3F6F;
+    --accent:     #2A7DE1;
+    --accent-bright: #4A9AFF;
+    --accent-glow:   rgba(42,125,225,0.18);
+    --gold:       #E8A93A;
+    --white:      #FFFFFF;
+    --off-white:  #F0F4FA;
+    --muted:      rgba(255,255,255,0.55);
+    --border:     rgba(255,255,255,0.1);
+    --border-accent: rgba(42,125,225,0.35);
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--navy-deep);
+    color: var(--white);
+    overflow-x: hidden;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ── NAV ── */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 1.2rem 4rem;
+    background: rgba(9,26,48,0.85);
+    backdrop-filter: blur(12px);
+    border-bottom: 0.5px solid var(--border);
+  }
+  .nav-logo {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800; font-size: 1.4rem; letter-spacing: -0.02em;
+    color: var(--white); text-decoration: none;
+  }
+  .nav-logo span { color: var(--accent-bright); }
+  .nav-cta {
+    font-size: 0.875rem; font-weight: 500;
+    background: var(--accent); color: var(--white);
+    padding: 0.55rem 1.4rem; border-radius: 6px;
+    text-decoration: none; transition: background 0.2s;
+  }
+  .nav-cta:hover { background: var(--accent-bright); }
+
+  /* ── ARTICLE LAYOUT ── */
+  .article-wrap {
+    max-width: 740px;
+    margin: 0 auto;
+    padding: 140px 48px 96px;
+  }
+
+  /* ── BACK LINK ── */
+  .back-link {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-size: 12px; font-weight: 500;
+    color: var(--muted); text-decoration: none;
+    letter-spacing: 0.04em; text-transform: uppercase;
+    margin-bottom: 48px;
+    transition: color 0.2s;
+  }
+  .back-link::before { content: '←'; transition: transform 0.2s; }
+  .back-link:hover { color: var(--accent-bright); }
+  .back-link:hover::before { transform: translateX(-4px); }
+
+  /* ── ARTICLE HEADER ── */
+  .article-header { margin-bottom: 32px; }
+
+  .article-meta {
+    display: flex; align-items: center; gap: 16px;
+    margin-bottom: 20px;
+  }
+  .article-date {
+    font-size: 11px; font-weight: 500;
+    letter-spacing: 0.08em; text-transform: uppercase;
+    color: var(--accent-bright); opacity: 0.8;
+  }
+  .article-author {
+    font-size: 11px; color: var(--muted);
+  }
+  .article-author::before { content: '·'; margin-right: 16px; opacity: 0.4; }
+
+  .article-title {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: clamp(28px, 4.5vw, 48px);
+    line-height: 1.1; letter-spacing: -0.03em;
+    margin-bottom: 20px; color: var(--white);
+  }
+  .article-title span { color: var(--accent-bright); }
+
+  .article-summary {
+    font-size: 18px; font-weight: 300;
+    color: var(--muted); line-height: 1.65;
+    border-left: 3px solid var(--accent);
+    padding-left: 20px;
+  }
+
+  .article-rule {
+    height: 1px; background: var(--border);
+    margin: 24px 0;
+  }
+
+  /* ── FEATURED IMAGE ── */
+  .article-image {
+    width: 100%; border-radius: 8px;
+    overflow: hidden; margin-bottom: 32px;
+    border: 1px solid var(--border);
+  }
+  .article-image img { width: 100%; display: block; }
+
+  /* ── ARTICLE BODY ── */
+  .article-body {
+    font-size: 17px; color: rgba(255,255,255,0.75);
+    line-height: 1.8;
+  }
+
+  .article-body h2 {
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: clamp(22px, 3vw, 30px);
+    line-height: 1.15; letter-spacing: -0.02em;
+    color: var(--white); margin: 48px 0 16px;
+  }
+
+  .article-body h3 {
+    font-family: 'Syne', sans-serif;
+    font-weight: 600;
+    font-size: clamp(18px, 2.5vw, 24px);
+    line-height: 1.2; letter-spacing: -0.015em;
+    color: var(--white); margin: 36px 0 12px;
+  }
+
+  .article-body h4 {
+    font-size: 11px; font-weight: 600;
+    letter-spacing: 0.08em; text-transform: uppercase;
+    color: var(--accent-bright); margin: 28px 0 10px;
+  }
+
+  .article-body p { margin-bottom: 24px; }
+  .article-body p:last-child { margin-bottom: 0; }
+  .article-body strong { font-weight: 500; color: var(--white); }
+  .article-body em { font-style: italic; }
+
+  .article-body a {
+    color: var(--accent-bright); text-decoration: underline;
+    text-decoration-thickness: 1px; text-underline-offset: 3px;
+  }
+  .article-body a:hover { color: var(--white); }
+
+  .article-body ul, .article-body ol {
+    padding-left: 24px; margin-bottom: 24px;
+    color: rgba(255,255,255,0.75);
+  }
+  .article-body li { margin-bottom: 8px; }
+
+  .article-body blockquote {
+    margin: 32px 0;
+    padding: 20px 28px;
+    border-left: 3px solid var(--accent);
+    background: rgba(42,125,225,0.08);
+    border-radius: 0 6px 6px 0;
+  }
+  .article-body blockquote p {
+    font-family: 'Syne', sans-serif;
+    font-size: 19px; font-style: italic;
+    color: var(--white); line-height: 1.5; margin: 0;
+  }
+
+  .article-body hr {
+    border: none; border-top: 1px solid var(--border);
+    margin: 40px 0;
+  }
+
+  .article-body img {
+    max-width: 100%; border-radius: 6px;
+    margin: 24px 0; border: 1px solid var(--border);
+  }
+
+  .article-body pre {
+    background: rgba(255,255,255,0.05);
+    border: 1px solid var(--border);
+    border-radius: 6px; padding: 20px;
+    overflow-x: auto; margin-bottom: 24px;
+    font-size: 14px; line-height: 1.6;
+  }
+
+  .article-body code {
+    font-size: 0.9em;
+    background: rgba(255,255,255,0.08);
+    padding: 2px 6px; border-radius: 3px;
+    color: var(--accent-bright);
+  }
+  .article-body pre code { background: none; padding: 0; color: inherit; }
+
+  /* ── LOADING / ERROR ── */
+  .loading-state, .error-state {
+    text-align: center; padding: 64px 0; color: var(--muted);
+  }
+  .loading-dots { display: inline-flex; gap: 8px; align-items: center; }
+  .loading-dots span {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: var(--accent-bright); opacity: 0.3;
+    animation: pulse 1.2s ease-in-out infinite;
+  }
+  .loading-dots span:nth-child(2) { animation-delay: 0.2s; }
+  .loading-dots span:nth-child(3) { animation-delay: 0.4s; }
+  @keyframes pulse {
+    0%, 100% { opacity: 0.3; transform: scale(1); }
+    50% { opacity: 1; transform: scale(1.2); }
+  }
+
+  /* ── CTA STRIP ── */
+  .article-cta {
+    margin-top: 64px;
+    background: linear-gradient(135deg, rgba(42,125,225,0.2) 0%, rgba(42,125,225,0.08) 100%);
+    border: 1px solid var(--border-accent);
+    border-radius: 10px;
+    padding: 40px 48px;
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 32px;
+  }
+  .article-cta-text {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(16px, 2vw, 21px);
+    font-weight: 600; line-height: 1.4;
+    color: var(--white);
+  }
+  .article-cta-text span { color: var(--accent-bright); }
+  .article-cta a {
+    flex-shrink: 0;
+    font-size: 13px; font-weight: 500;
+    letter-spacing: 0.04em;
+    background: var(--accent); color: var(--white);
+    padding: 12px 24px; border-radius: 6px;
+    text-decoration: none; transition: background 0.2s;
+    white-space: nowrap;
+  }
+  .article-cta a:hover { background: var(--accent-bright); }
+
+  /* ── FOOTER ── */
+  footer {
+    background: var(--navy-deep);
+    border-top: 1px solid var(--border);
+    padding: 40px 64px;
+    font-size: 13px; color: var(--muted);
+    display: flex; align-items: center; justify-content: space-between;
+    margin-top: 64px;
+  }
+  footer a { color: var(--muted); text-decoration: none; transition: color 0.2s; }
+  footer a:hover { color: var(--white); }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 768px) {
+    nav { padding: 1rem 1.5rem; }
+    .article-wrap { padding: 120px 24px 64px; }
+    .article-cta { flex-direction: column; padding: 28px 24px; }
+    footer { flex-direction: column; gap: 12px; text-align: center; padding: 32px 24px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a href="/" class="nav-logo">Pair<span>lot</span></a>
+  <a href="/#founding" class="nav-cta">Reserve Your Spot</a>
+</nav>
+
+<!-- ARTICLE -->
+<div class="article-wrap">
+  <a href="/blog/" class="back-link">All articles</a>
+  <div id="articleContent">
+    <div class="loading-state">
+      <div class="loading-dots"><span></span><span></span><span></span></div>
+    </div>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <span>© 2025 Pairlot by Globus Edge. All rights reserved.</span>
+  <a href="/blog/">← Back to blog</a>
+</footer>
+
+<script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
+<script>
+  if (window.netlifyIdentity) {
+    window.netlifyIdentity.on("init", user => {
+      if (!user) {
+        window.netlifyIdentity.on("login", () => {
+          document.location.href = "/admin/";
+        });
+      }
+    });
+  }
+
+  const GITHUB_USER = 'globusedge';
+  const GITHUB_REPO = 'pairlot-site';
+  const POSTS_PATH = 'blog/posts';
+
+  function parseFrontMatter(text) {
+    const match = text.match(/^---\n([\s\S]*?)\n---\n([\s\S]*)$/);
+    if (!match) return { data: {}, content: text };
+    const data = {};
+    const lines = match[1].split('\n');
+    let i = 0;
+    while (i < lines.length) {
+      const line = lines[i];
+      const colonIdx = line.indexOf(':');
+      if (colonIdx === -1) { i++; continue; }
+      const key = line.slice(0, colonIdx).trim();
+      const rest = line.slice(colonIdx + 1).trim();
+      if (rest === '>-' || rest === '|-' || rest === '>' || rest === '|') {
+        let block = [];
+        i++;
+        while (i < lines.length && (lines[i].startsWith(' ') || lines[i].startsWith('\t'))) {
+          block.push(lines[i].trim());
+          i++;
+        }
+        data[key] = block.join(' ');
+      } else {
+        data[key] = rest.replace(/^["']|["']$/g, '');
+        i++;
+      }
+    }
+    return { data, content: match[2].trim() };
+  }
+
+  function formatDate(dateStr) {
+    if (!dateStr) return '';
+    const d = new Date(dateStr);
+    if (isNaN(d)) return dateStr;
+    return d.toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
+  }
+
+  function getSlug() {
+    const params = new URLSearchParams(window.location.search);
+    return params.get('slug');
+  }
+
+  async function loadPost() {
+    const container = document.getElementById('articleContent');
+    const slug = getSlug();
+    if (!slug) { window.location.href = '/blog/'; return; }
+
+    try {
+      const url = `https://raw.githubusercontent.com/${GITHUB_USER}/${GITHUB_REPO}/main/${POSTS_PATH}/${slug}.md`;
+      const res = await fetch(url);
+      if (!res.ok) throw new Error('Post not found');
+      const text = await res.text();
+      const { data, content } = parseFrontMatter(text);
+
+      if (data.title) document.title = `${data.title} — Pairlot`;
+
+      const imgHtml = data.thumbnail
+        ? `<div class="article-image"><img src="${data.thumbnail}" alt="${data.title}"></div>`
+        : '';
+
+      const summaryHtml = data.summary
+        ? `<p class="article-summary">${data.summary}</p><div class="article-rule"></div>`
+        : '<div class="article-rule"></div>';
+
+      const bodyHtml = marked.parse(content);
+
+      container.innerHTML = `
+        <div class="article-header">
+          <div class="article-meta">
+            <span class="article-date">${formatDate(data.date)}</span>
+            <span class="article-author">${data.author || 'Pairlot'}</span>
+          </div>
+          <h1 class="article-title">${data.title || 'Untitled'}</h1>
+          ${summaryHtml}
+        </div>
+        ${imgHtml}
+        <div class="article-body">${bodyHtml}</div>
+        <div class="article-cta">
+          <p class="article-cta-text">Ready to find the <span>right partners</span> faster?</p>
+          <a href="/#founding">Reserve your spot</a>
+        </div>`;
+
+    } catch (err) {
+      container.innerHTML = `
+        <div class="error-state">
+          <p>Post not found. <a href="/blog/" style="color:var(--accent-bright)">Back to blog →</a></p>
+        </div>`;
+      console.error(err);
+    }
+  }
+
+  loadPost();
+</script>
+</body>
+</html>
