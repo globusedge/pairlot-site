@@ -1063,6 +1063,25 @@ document.head.appendChild(o)}initApollo();</script>
           You’re only seeing the surface. Log in to unlock full partner intelligence,
           verified contacts, and live market signals.
         </p>
+        <div class="pairlot-snapshot-map" aria-label="Anonymous partner market map preview">
+          <div class="pairlot-map-axis pairlot-map-axis--vertical"></div>
+          <div class="pairlot-map-axis pairlot-map-axis--horizontal"></div>
+          <span class="pairlot-map-label pairlot-map-label--tl">High scale<br>Lower reach</span>
+          <span class="pairlot-map-label pairlot-map-label--tr">High scale<br>High reach</span>
+          <span class="pairlot-map-label pairlot-map-label--bl">Emerging<br>Specialists</span>
+          <span class="pairlot-map-label pairlot-map-label--br">Focused<br>High reach</span>
+          <span class="pairlot-map-dot" style="--x:18%;--y:68%;"></span>
+          <span class="pairlot-map-dot pairlot-map-dot--gold" style="--x:33%;--y:52%;"></span>
+          <span class="pairlot-map-dot" style="--x:48%;--y:31%;"></span>
+          <span class="pairlot-map-dot" style="--x:64%;--y:20%;"></span>
+          <span class="pairlot-map-dot pairlot-map-dot--gold" style="--x:78%;--y:45%;"></span>
+          <span class="pairlot-map-dot" style="--x:25%;--y:28%;"></span>
+          <span class="pairlot-map-dot" style="--x:43%;--y:76%;"></span>
+          <span class="pairlot-map-dot pairlot-map-dot--gold" style="--x:61%;--y:66%;"></span>
+          <span class="pairlot-map-dot" style="--x:82%;--y:72%;"></span>
+          <span class="pairlot-map-dot" style="--x:70%;--y:33%;"></span>
+          <div class="pairlot-map-footnote">10 partner records mapped anonymously</div>
+        </div>
       </div>
 
       <form class="pairlot-snapshot__form" id="pairlotSnapshotForm">
@@ -1157,6 +1176,72 @@ document.head.appendChild(o)}initApollo();</script>
       .pairlot-snapshot p {
         color: #F0F4FA;
         line-height: 1.55;
+      }
+      .pairlot-snapshot-map {
+        position: relative;
+        min-height: 270px;
+        margin-top: 32px;
+        border-radius: 14px;
+        border: 1px solid rgba(42, 125, 225, 0.35);
+        background:
+          radial-gradient(circle at 78% 22%, rgba(232, 169, 58, 0.16), transparent 24%),
+          radial-gradient(circle at 24% 78%, rgba(74, 154, 255, 0.18), transparent 26%),
+          rgba(9, 26, 48, 0.74);
+        overflow: hidden;
+      }
+      .pairlot-map-axis {
+        position: absolute;
+        background: rgba(255, 255, 255, 0.16);
+      }
+      .pairlot-map-axis--vertical {
+        top: 22px;
+        bottom: 34px;
+        left: 50%;
+        width: 1px;
+      }
+      .pairlot-map-axis--horizontal {
+        left: 22px;
+        right: 22px;
+        top: 50%;
+        height: 1px;
+      }
+      .pairlot-map-label {
+        position: absolute;
+        color: rgba(255, 255, 255, 0.48);
+        font-size: 11px;
+        line-height: 1.25;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+      }
+      .pairlot-map-label--tl { top: 14px; left: 16px; }
+      .pairlot-map-label--tr { top: 14px; right: 16px; text-align: right; }
+      .pairlot-map-label--bl { bottom: 38px; left: 16px; }
+      .pairlot-map-label--br { bottom: 38px; right: 16px; text-align: right; }
+      .pairlot-map-dot {
+        position: absolute;
+        left: var(--x);
+        top: var(--y);
+        width: 12px;
+        height: 12px;
+        border-radius: 999px;
+        background: #4A9AFF;
+        border: 2px solid rgba(255, 255, 255, 0.9);
+        box-shadow: 0 0 18px rgba(74, 154, 255, 0.42);
+      }
+      .pairlot-map-dot--gold {
+        width: 15px;
+        height: 15px;
+        background: #E8A93A;
+        box-shadow: 0 0 20px rgba(232, 169, 58, 0.46);
+      }
+      .pairlot-map-footnote {
+        position: absolute;
+        left: 16px;
+        right: 16px;
+        bottom: 12px;
+        color: rgba(255, 255, 255, 0.66);
+        font-size: 12px;
+        text-align: center;
       }
       .pairlot-snapshot__form {
         display: grid;
