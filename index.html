@@ -1084,7 +1084,7 @@ document.head.appendChild(o)}initApollo();</script>
         </div>
       </div>
 
-      <form class="pairlot-snapshot__form" id="pairlotSnapshotForm">
+      <form class="pairlot-snapshot__form" id="pairlotSnapshotForm" autocomplete="off">
         <div class="pairlot-snapshot__grid">
           <label>
             First name
@@ -1312,6 +1312,14 @@ document.head.appendChild(o)}initApollo();</script>
         const status = document.getElementById("pairlotSnapshotStatus");
         const endpoint = "https://pairlot-snapshot-api.onrender.com/api/partner-market-snapshot/request";
 
+        function resetSnapshotStatus() {
+          if (status) status.textContent = "";
+        }
+
+        resetSnapshotStatus();
+        window.resetPairlotSnapshotStatus = resetSnapshotStatus;
+        window.addEventListener("pageshow", resetSnapshotStatus);
+
         form.addEventListener("submit", async function (event) {
           event.preventDefault();
           const button = form.querySelector("button[type='submit']");
@@ -1382,6 +1390,7 @@ document.head.appendChild(o)}initApollo();</script>
 
   // Partner Market Snapshot modal
   function openSnapshotModal() {
+    if (window.resetPairlotSnapshotStatus) window.resetPairlotSnapshotStatus();
     var el = document.getElementById('snapModal');
     if (el) el.classList.add('visible');
   }
