@@ -1139,7 +1139,8 @@ document.head.appendChild(o)}initApollo();</script>
           <span>I confirm I am authorized to request this snapshot for my company.</span>
         </label>
 
-        <button type="submit">Send my snapshot</button>
+        <div id="pairlotSnapshotTurnstile"></div>
+        <button type="submit" disabled>Send my snapshot</button>
         <p class="pairlot-snapshot__status" id="pairlotSnapshotStatus" aria-live="polite"></p>
       </form>
     </section>
@@ -1344,7 +1345,44 @@ document.head.appendChild(o)}initApollo();</script>
       (function () {
         const form = document.getElementById("pairlotSnapshotForm");
         const status = document.getElementById("pairlotSnapshotStatus");
-        const endpoint = "https://pairlot-snapshot-api.onrender.com/api/partner-market-snapshot/request";
+        const endpoint = "https://pairlot-snapshot-gateway.amit-515.workers.dev/api/partner-market-snapshot/request";
+        const button = form.querySelector("button[type='submit']");
+        let siteKey = "";
+        let widgetId = null;
+        let securityToken = "";
+        let submitting = false;
+
+        function renderSecurityCheck() {
+          if (!siteKey || !window.turnstile || widgetId !== null) return;
+          widgetId = window.turnstile.render("#pairlotSnapshotTurnstile", {
+            sitekey: siteKey,
+            action: "partner_snapshot",
+            callback: function (token) {
+              securityToken = token;
+              button.disabled = submitting;
+            },
+            "expired-callback": function () {
+              securityToken = "";
+              button.disabled = true;
+            },
+            "error-callback": function () {
+              securityToken = "";
+              button.disabled = true;
+              status.textContent = "Security check unavailable. Please reload and try again.";
+            }
+          });
+        }
+        window.pairlotSnapshotTurnstileReady = renderSecurityCheck;
+        fetch(new URL("/config", endpoint)).then(function (response) {
+          if (!response.ok) throw new Error("Security check unavailable.");
+          return response.json();
+        }).then(function (config) {
+          siteKey = config.turnstile_site_key || "";
+          if (!siteKey) throw new Error("Security check unavailable.");
+          renderSecurityCheck();
+        }).catch(function () {
+          status.textContent = "Security check unavailable. Please try again later.";
+        });
 
         function resetSnapshotStatus() {
           if (status) status.textContent = "";
@@ -1356,7 +1394,7 @@ document.head.appendChild(o)}initApollo();</script>
 
         form.addEventListener("submit", async function (event) {
           event.preventDefault();
-          const button = form.querySelector("button[type='submit']");
+          if (submitting || !securityToken) return;
           const data = new FormData(form);
           const payload = {
             first_name: data.get("first_name"),
@@ -1366,12 +1404,14 @@ document.head.appendChild(o)}initApollo();</script>
             company_website: data.get("company_website"),
             partner_types: [data.get("partner_type")],
             regions: [data.get("region")],
+            turnstile_token: securityToken,
             utm_source: new URLSearchParams(window.location.search).get("utm_source") || "pairlot.com",
             utm_medium: new URLSearchParams(window.location.search).get("utm_medium") || "website",
             utm_campaign: new URLSearchParams(window.location.search).get("utm_campaign") || "snapshot_widget"
           };
 
           button.disabled = true;
+          submitting = true;
           status.textContent = "Sending verification email...";
           try {
             const response = await fetch(endpoint, {
@@ -1388,11 +1428,15 @@ document.head.appendChild(o)}initApollo();</script>
           } catch (error) {
             status.textContent = error.message;
           } finally {
-            button.disabled = false;
+            submitting = false;
+            securityToken = "";
+            button.disabled = true;
+            if (window.turnstile && widgetId !== null) window.turnstile.reset(widgetId);
           }
         });
       }());
     </script>
+    <script src="https://challenges.cloudflare.com/turnstile/v0/api.js?onload=pairlotSnapshotTurnstileReady&amp;render=explicit" async defer></script>
   </div>
 </div>
 
