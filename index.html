@@ -640,14 +640,40 @@
   }
   .snap-modal-close:hover { color: #fff; background: rgba(255,255,255,0.15); }
 </style>
-<!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-RHB7VK6PNM"></script>
+<!-- Google Analytics: exclude marked internal browsers before loading the tag. -->
 <script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-  
-  gtag('config', 'G-RHB7VK6PNM');
+  (function () {
+    const measurementId = 'G-RHB7VK6PNM';
+    const url = new URL(window.location.href);
+    const analyticsUrl = new URL(url.origin + url.pathname);
+    ['utm_source', 'utm_medium', 'utm_campaign', 'utm_content', 'utm_term'].forEach(function (key) {
+      if (url.searchParams.has(key)) analyticsUrl.searchParams.set(key, url.searchParams.get(key));
+    });
+    const setting = url.searchParams.get('pairlot_internal');
+    let excluded = setting === '1';
+    try {
+      if (setting === '1') localStorage.setItem('pairlot_internal', '1');
+      if (setting === '0') localStorage.removeItem('pairlot_internal');
+      excluded = excluded || localStorage.getItem('pairlot_internal') === '1';
+    } catch (error) {
+      // Explicit opt-out still applies when browser storage is blocked.
+    }
+    window['ga-disable-' + measurementId] = excluded;
+    window.__pairlotInternalTraffic = excluded;
+    if (excluded) return;
+    window.dataLayer = window.dataLayer || [];
+    window.gtag = function () { window.dataLayer.push(arguments); };
+    window.gtag('js', new Date());
+    window.gtag('config', measurementId, {
+      page_location: analyticsUrl.href,
+      page_path: analyticsUrl.pathname + analyticsUrl.search,
+      page_referrer: ''
+    });
+    const tag = document.createElement('script');
+    tag.async = true;
+    tag.src = 'https://www.googletagmanager.com/gtag/js?id=' + measurementId;
+    document.head.appendChild(tag);
+  })();
 </script>
 <!-- Apollo tracker -->
 <script>function initApollo(){var n=Math.random().toString(36).substring(7),o=document.createElement("script");
